@@ -1,1 +1,19 @@
 @import "compass_twitter_bootstrap";
+@import "compass_twitter_bootstrap_responsive";
+
+body {
+  padding-top: 40px;
+}
+
+/* Keep that sidebar alive */
+.docs-sidebar {
+  min-height: 1px;
+}
+
+.docs-sidebar .affix {
+  top: 40px;
+}
+
+.affix {
+  position: fixed;
+}

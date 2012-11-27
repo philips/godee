@@ -1,0 +1,340 @@
+<h1 id="Builtin Modules2"><a href="#Builtin Modules2">Builtin Modules2</a></h1>
+<h2 id="uv"><a href="#uv">uv</a></h2>
+<p>Inherits from <code>core.Object</code>
+
+</p>
+<h3>uv.Handle</h3>
+<p>Inherits from <code>Emitter</code>
+
+</p>
+<p>This class is never used directly, but is the inheritance chain of all libuv
+objects.
+
+</p>
+<h4>Handle:addHandlerType(name)</h4>
+<p>This is used by Emitters to register with native events when the first listener
+is added.
+
+</p>
+<h3>uv.Pipe</h3>
+<p>Inherits from <code>uv.Stream</code>
+
+</p>
+<h4>Pipe:initialize(ipc)</h4>
+<h3>uv.Process</h3>
+<p>Inherits from <code>uv.Handle</code>
+
+</p>
+<h4>Process:initialize(command, args, options)</h4>
+<h3>uv.Stream</h3>
+<p>Inherits from <code>uv.Handle</code>
+
+</p>
+<p>This is never used directly.  If you want to create a pure Lua stream, subclass
+or instantiate <code>core.iStream</code>.
+
+</p>
+<h3>uv.Tcp</h3>
+<p>Inherits from <code>uv.Stream</code>
+
+</p>
+<h4>Tcp:initialize()</h4>
+<h3>uv.Timer</h3>
+<p>Inherits from <code>uv.Handle</code>
+
+</p>
+<h4>Timer:initialize()</h4>
+<h3>uv.Tty</h3>
+<p>Inherits from <code>uv.Stream</code>
+
+</p>
+<h4>Tty:initialize(fd, readable)</h4>
+<h3>uv.Udp</h3>
+<p>Inherits from <code>uv.Handle</code>
+
+</p>
+<h4>Udp:initialize()</h4>
+<h3>uv.Watcher</h3>
+<p>Inherits from <code>uv.Handle</code>
+
+</p>
+<h4>Watcher:initialize(path)</h4>
+<p>istening&#39;` event has been emitted.
+
+</p>
+<h4>Server:close()</h4>
+<p>Stops the server from accepting new connections. This function is
+asynchronous, the server is finally closed when the server emits a <code>&#39;close&#39;</code>
+event.
+
+</p>
+<h4>Server:listen(port, host, listeningListener)</h4>
+<p>Begin accepting connections on the specified <code>port</code> and <code>host</code>.  If the
+<code>host</code> is omitted, the server will accept connections directed to any
+IPv4 address (<code>INADDR_ANY</code>). A port value of zero will assign a random port.
+
+</p>
+<p>This function is asynchronous.  When the server has been bound,
+<a href="#event_listening_">&#39;listening&#39;</a> event will be emitted.
+the last parameter <code>listeningListener</code> will be added as an listener for the
+<a href="#event_listening_">&#39;listening&#39;</a> event.
+
+</p>
+<p>One issue some users run into is getting <code>EADDRINUSE</code> errors. This means that
+another server is already running on the requested port. One way of handling this
+would be to wait a second and then try again. This can be done with
+
+</p>
+<pre><code>server:on(&#39;error&#39;, function (e)
+  if e.code == &#39;EADDRINUSE&#39; then
+    print(&#39;Address in use, retrying...&#39;)
+    timer.setTimeout(1000, function ()
+      server:close()
+      server:listen(PORT, HOST)
+    end)
+  end
+end)</code></pre>
+<p>(Note: All sockets in Luvit set <code>SO_REUSEADDR</code> already)
+
+</p>
+<p>If a path is given instead of a port, then start a UNIX socket server 
+listening for connections on the given <code>path</code>.
+
+</p>
+<p>This function is asynchronous.  When the server has been bound,
+<a href="#event_listening_">&#39;listening&#39;</a> event will be emitted.
+the last parameter <code>listeningListener</code> will be added as an listener for the
+<a href="#event_listening_">&#39;listening&#39;</a> event.
+
+
+</p>
+<h4>Server:pause(msecs)</h4>
+<p>Stop accepting connections for the given number of milliseconds (default is
+one second).  This could be useful for throttling new connections against
+DoS attacks or other oversubscription.
+
+</p>
+<h3>net2.Socket</h3>
+<p>Inherits from <code>uv.Stream</code>
+
+</p>
+<p>This object is an abstraction of a TCP or UNIX socket.  <code>net.Socket</code>
+instances implement a duplex Stream interface.  They can be created by the
+user and used as a client (with <code>connect()</code>) or they can be created by Luvit
+and passed to the user through the <code>&#39;connection&#39;</code> event of a server.
+
+</p>
+<h4>Socket:address()</h4>
+<p>Returns the bound address and port of the socket as reported by the operating
+system. Returns a table with two properties, e.g.
+<code>{address = &quot;192.168.57.1&quot;, port = 62053}</code>
+
+</p>
+<h4>Socket:connect(port, host, connectListener)</h4>
+<p>Opens the connection for a given socket. If <code>port</code> and <code>host</code> are given,
+then the socket will be opened as a TCP socket, if <code>host</code> is omitted,
+<code>localhost</code> will be assumed. If a <code>path</code> is given, the socket will be
+opened as a unix socket to that path.
+
+</p>
+<p>Normally this method is not needed, as <code>net.createConnection</code> opens the
+socket. Use this only if you are implementing a custom Socket or if a
+Socket is closed and you want to reuse it to connect to another server.
+
+</p>
+<p>This function is asynchronous. When the <a href="#event_connect_">&#39;connect&#39;</a> event is
+emitted the socket is established. If there is a problem connecting, the
+<code>&#39;connect&#39;</code> event will not be emitted, the <code>&#39;error&#39;</code> event will be emitted with
+the exception.
+
+</p>
+<p>The <code>connectListener</code> parameter will be added as an listener for the
+<a href="#event_connect_">&#39;connect&#39;</a> event.
+
+</p>
+<h4>Socket:destroy()</h4>
+<p>Ensures that no more I/O activity happens on this socket. Only necessary in
+case of errors (parse error or so).
+
+</p>
+<h4>Socket:finish(data, callback)</h4>
+<p>Half-closes the socket. i.e., it sends a FIN packet. It is possible the
+server will still send some data.
+
+</p>
+<p>If <code>data</code> is specified, it is equivalent to calling
+<code>socket:write(data)</code> followed by <code>socket:finish()</code>.
+
+</p>
+<h4>Socket:initialize(options)</h4>
+<p>Construct a new socket object.
+
+</p>
+<p><code>options</code> is an object with the following defaults:
+
+</p>
+<pre><code>{
+  fd = nil,
+  type = nil,
+  allowHalfOpen = false
+}</code></pre>
+<p><code>fd</code> allows you to specify the existing file descriptor of socket. <code>type</code>
+specified underlying protocol. It can be <code>&#39;tcp4&#39;</code>, <code>&#39;tcp6&#39;</code>, or <code>&#39;unix&#39;</code>.
+About <code>allowHalfOpen</code>, refer to <code>createServer()</code> and <code>&#39;end&#39;</code> event.
+
+</p>
+<h4>Socket:pause()</h4>
+<p>Pauses the reading of data. That is, <code>&#39;data&#39;</code> events will not be emitted.
+Useful to throttle back an upload.
+
+</p>
+<h4>Socket:remoteAddress()</h4>
+<p>The string representation of the remote IP address. For example,
+<code>&#39;74.125.127.100&#39;</code> or <code>&#39;2001:4860:a005::68&#39;</code>.
+
+</p>
+<h4>Socket:remotePort()</h4>
+<p>The numeric representation of the remote port. For example,
+<code>80</code> or <code>21</code>.
+
+</p>
+<h4>Socket:resume()</h4>
+<p>Resumes reading after a call to <code>pause()</code>.
+
+</p>
+<h4>Socket:setKeepAlive(enable, initialDelay)</h4>
+<p>Enable/disable keep-alive functionality, and optionally set the initial
+delay before the first keepalive probe is sent on an idle socket.
+<code>enable</code> defaults to <code>false</code>.
+
+</p>
+<p>Set <code>initialDelay</code> (in milliseconds) to set the delay between the last
+data packet received and the first keepalive probe. Setting 0 for
+initialDelay will leave the value unchanged from the default
+(or previous) setting. Defaults to <code>0</code>.
+
+</p>
+<h4>Socket:setNoDelay(noDelay)</h4>
+<p>Disables the Nagle algorithm. By default TCP connections use the Nagle
+algorithm, they buffer data before sending it off. Setting <code>true</code> for
+<code>noDelay</code> will immediately fire off data each time <code>socket.write()</code> is called.
+<code>noDelay</code> defaults to <code>true</code>.
+
+</p>
+<h4>Socket:setTimeout(timeout, callback)</h4>
+<p>Sets the socket to timeout after <code>timeout</code> milliseconds of inactivity on
+the socket. By default <code>net.Socket</code> do not have a timeout.
+
+</p>
+<p>When an idle timeout is triggered the socket will receive a <code>&#39;timeout&#39;</code>
+event but the connection will not be severed. The user must manually <code>end()</code>
+or <code>destroy()</code> the socket.
+
+</p>
+<p>If <code>timeout</code> is 0, then the existing idle timeout is disabled.
+
+</p>
+<p>The optional <code>callback</code> parameter will be added as a one time listener for the
+<code>&#39;timeout&#39;</code> event.
+
+</p>
+<h4>Socket:write(data, callback)</h4>
+<p>Sends data on the socket. The second parameter specifies the encoding in the
+case of a string--it defaults to UTF8 encoding.
+
+</p>
+<p>Returns <code>true</code> if the entire data was flushed successfully to the kernel
+buffer. Returns <code>false</code> if all or part of the data was queued in user memory.
+<code>&#39;drain&#39;</code> will be emitted when the buffer is again free.
+
+</p>
+<p>The optional <code>callback</code> parameter will be executed when the data is finally
+written out - this may not be immediately.
+
+</p>
+<h3>net2.connect(port, host, connectListener)</h3>
+<p>Construct a new socket object and opens a socket to the given location. When the
+socket is established the <code>connect</code> event will be emitted.
+
+</p>
+<p>The arguments for these methods change the type of connection:
+
+</p>
+<ul>
+<li><p><code>net.connect(port, [host], [connectListener])</code> - Creates a TCP connection to
+port on host. If host is omitted, &#39;localhost&#39; will be assumed.</p>
+</li>
+<li><p><code>net.connect(path, [connectListener])</code> - Creates unix socket connection to
+<code>path</code>.</p>
+</li>
+</ul>
+<p>The connectListener parameter will be added as an listener for the <code>connect</code>
+event.
+
+</p>
+<p>Here is an example of a client of echo server as described previously:
+
+</p>
+<pre><code>local net = require &#39;net&#39;
+local client = net.connect(8124, function ()
+  debug(&#39;on_connect&#39;)
+  client:write(&#39;world!\r\n&#39;)
+end)
+client:on(&#39;data&#39;, function (data) 
+  debug(&#39;on_data&#39;, data)
+  client:end()
+end)
+client:on(&#39;end&#39;, function ()
+  debug(&#39;on_end&#39;)
+end)</code></pre>
+<p>To connect on the socket <code>/tmp/echo.sock</code> the second line would just be changed to
+
+</p>
+<pre><code>local client = net.connect(&#39;/tmp/echo.sock&#39;, function ()</code></pre>
+<h3>net2.createServer(options, connectionListener)</h3>
+<p>Creates a new TCP server. The <code>connectionListener</code> argument is automatically set
+as a listener for the <code>connection</code> event.
+
+</p>
+<p><code>options</code> is a table with the following defaults:
+
+</p>
+<pre><code>{ allowHalfOpen = false }</code></pre>
+<p>If <code>allowHalfOpen</code> is <code>true</code>, then the socket won&#39;t automatically send a FIN
+packet when the other end of the socket sends a FIN packet. The socket becomes
+non-readable, but still writable. You should call the <code>end()</code> method explicitly.
+See <code>end</code> event for more information.
+
+</p>
+<p>Here is an example of a echo server which listens for connections
+on port 8124:
+
+</p>
+<pre><code>local net = require(&#39;net&#39;)
+local server = net.createServer(function (c) { //&#39;connection&#39; listener
+  debug(&#39;server connected&#39;)
+  c:on(&#39;end&#39;, function ()
+    debug(&#39;client disconnected&#39;)
+  end)
+  c:write(&#39;hello\r\n&#39;)
+  c:pipe(c)
+end)
+server:listen(8124, function () {
+  print(&#39;server bound&#39;)
+end)</code></pre>
+<p>Test this by using <code>telnet</code>:
+
+</p>
+<pre><code>telnet localhost 8124</code></pre>
+<p>To listen on the socket <code>/tmp/echo.sock</code> the third line from the last would
+just be changed to
+
+</p>
+<pre><code>server:listen(&#39;/tmp/echo.sock&#39;, function (c) {</code></pre>
+<p>Use <code>nc</code> to connect to a UNIX domain socket server:
+
+</p>
+<pre><code>nc -U /tmp/echo.sock</code></pre>
+<h1 id="Examples"><a href="#Examples">Examples</a></h1>
+<h2 id="Reading a file"><a href="#Reading a file">Reading a file</a></h2>
+<pre><code>fs.readFileSync()</code></pre>

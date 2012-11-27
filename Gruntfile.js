@@ -5,10 +5,19 @@ module.exports = function( grunt ) {
   //
   // https://github.com/cowboy/grunt/blob/master/docs/getting_started.md
   //
+
   grunt.initConfig({
 
     // Project configuration
     // ---------------------
+
+    bootdown: {
+      options: {
+        file: 'app/docs/README.markdown',
+        template: 'app/templates/index.html',
+        out: 'temp'
+      }
+    },
 
     // specify an alternate install location for Bower
     bower: {
@@ -53,6 +62,14 @@ module.exports = function( grunt ) {
 
     // default watch configuration
     watch: {
+      bootdown: {
+        files: [
+          '**/*.{md,markdown}',
+          'app/templates/**'
+        ],
+        tasks: 'bootdown'
+      },
+
       coffee: {
         files: 'app/scripts/**/*.coffee',
         tasks: 'coffee reload'
@@ -186,4 +203,23 @@ module.exports = function( grunt ) {
   // Alias the `test` task to run the `mocha` task instead
   grunt.registerTask('test', 'server:phantom mocha');
 
+  grunt.registerTask('bootdown', 'bootdown', function() {
+    var task_opts = grunt.config('bootdown').options,
+        args = ['scripts/bootdown.js'];
+
+    args.push(task_opts.file);
+    args.push(task_opts.template);
+    args.push(task_opts.out);
+
+    var options = {
+      cmd: 'node',
+      args: args
+    };
+
+    grunt.utils.spawn(options, function(error, result, code) {
+      grunt.log.writeln(error);
+      grunt.log.writeln(code);
+      grunt.log.writeln(result);
+    });
+  });
 };
